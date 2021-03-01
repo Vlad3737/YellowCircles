@@ -1,29 +1,29 @@
 import random
 import sys
 from PyQt5 import uic
-from UI import Ui_MainWindow
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QLabel, QPushButton, QTableWidgetItem
+import sqlite3
 
 
-class Nim(Ui_MainWindow, QMainWindow):
+class Nim(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setupUi(self)
-        self.pushButton.clicked.connect(self.run)
-        self.buttons = [
-            [QLabel(self),
-             random.randint(10, 300),
-             (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))]
-            for _ in range(3)]
-        for i in range(len(self.buttons)):
-            itemRad = self.buttons[i][1]
-            self.buttons[i][0].move(30 + 620 * i, 300)
-            self.buttons[i][0].resize(itemRad * 2, itemRad * 2)
-
-
-    def run(self):
-        for i in range(len(self.buttons)):
-            self.buttons[i][0].setStyleSheet(f'background: rgb({self.buttons[i][-1][0]}, {self.buttons[i][-1][1]}, {self.buttons[i][-1][2]}); border-radius:{self.buttons[i][1]}px')
+        uic.loadUi("main.ui", self)
+        con = sqlite3.connect("coffee.sqlite")
+        cur = con.cursor()
+        self.labels = ["ID", "название сорта", "степень обжарки", "молотый/в зернах", "описание вкуса", "цена", "объем упаковки"]
+        result = cur.execute("""SELECT * FROM coffee""").fetchall()
+        for elem in result:
+            print(elem)
+        self.setCentralWidget(self.tableWidget)
+        self.tableWidget.setColumnCount(len(self.labels))
+        self.tableWidget.setHorizontalHeaderLabels(self.labels)
+        con.close()
+        for index, elem in enumerate(result):
+            row = self.tableWidget.rowCount()
+            self.tableWidget.setRowCount(row + 1)
+            for i, j in enumerate(elem):
+                self.tableWidget.setItem(row, i, QTableWidgetItem(str(j)))
 
 
 if __name__ == '__main__':
