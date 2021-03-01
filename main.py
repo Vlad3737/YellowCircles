@@ -8,8 +8,8 @@ import sqlite3
 class Nim(QMainWindow):
     def __init__(self):
         super().__init__()
-
         uic.loadUi("main.ui", self)
+        
         con = sqlite3.connect("coffee.sqlite")
         cur = con.cursor()
         self.labels = ["ID", "название сорта", "степень обжарки", "молотый/в зернах", "описание вкуса", "цена", "объем упаковки"]
